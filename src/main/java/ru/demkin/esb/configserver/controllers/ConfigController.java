@@ -1,6 +1,5 @@
 package ru.demkin.esb.configserver.controllers;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,18 +13,18 @@ import java.util.List;
 @RestController
 public class ConfigController {
 
-    @Autowired
-    private ConfigService service;
+  @Autowired
+  private ConfigService service;
 
-    @Operation(summary = "Записать тестовое сообщение")
-    @PostMapping("/save")
-    public void save(@RequestBody String value) {
-        service.save(value);
-    }
+  @Operation(summary = "Записать тестовое сообщение")
+  @PostMapping("/save")
+  public void save(@RequestBody String value) {
+    service.save(value);
+  }
 
-    @Operation(summary = "Прочитать все сообщения")
-    @GetMapping("/load")
-    public List<String> load() {
-        return service.load();
-    }
+  @Operation(summary = "Прочитать все сообщения")
+  @GetMapping("/load")
+  public List<String> load() {
+    return service.load();
+  }
 }
