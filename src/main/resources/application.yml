@@ -1,5 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/config
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: secret
+
+mybatis:
+  config-location: classpath:mybatis.xml

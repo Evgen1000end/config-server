@@ -7,13 +7,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StrategyFactory {
-  private static final Logger log  = LoggerFactory.getLogger(StrategyFactory.class);
+  private static final Logger log = LoggerFactory.getLogger(StrategyFactory.class);
 
   @Autowired
   private ConfigurationUpdateStrategy user;
 
   @Autowired
   private ConfigurationUpdateStrategy admin;
+
+  @Autowired
+  private ConfigurationUpdateStrategy base;
 
   public ConfigurationUpdateStrategy of(String username) {
     return username == null ? admin : user;
@@ -23,4 +26,7 @@ public class StrategyFactory {
     return admin;
   }
 
+  public ConfigurationUpdateStrategy base() {
+    return base;
+  }
 }

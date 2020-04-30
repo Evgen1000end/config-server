@@ -40,4 +40,5 @@ public class ConfigurationDescription {
   public void setValue(Object value) {
     this.value = value;
   }
+
 }

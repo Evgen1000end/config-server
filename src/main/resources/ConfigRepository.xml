@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.demkin.esb.configserver.repository.ConfigRepositoty">
+
+  <insert id="saveConfig">
+    INSERT INTO postgres.public.configs (value, is_admin, uri, label, username)
+    values (#{value}, #{isAdmin}, #{description.uri}, #{description.label}, #{username})
+
+  </insert>
+
+  <!--  <insert id="saveHeader">-->
+  <!--    <![CDATA[-->
+  <!--    INSERT INTO uem_request (-->
+  <!--      message_id,-->
+  <!--      date,-->
+  <!--      sender,-->
+  <!--      receiver,-->
+  <!--      market,-->
+  <!--      message_type,-->
+  <!--      comment-->
+  <!--    ) VALUES (-->
+  <!--               #{header.messageId},-->
+  <!--               #{header.date},-->
+  <!--               #{header.sender},-->
+  <!--               #{header.receiver},-->
+  <!--               #{header.market},-->
+  <!--               #{header.messageType},-->
+  <!--               #{header.comment}-->
+  <!--             )-->
+  <!--    ]]>-->
+  <!--  </insert>-->
+
+  <!--  <insert id="savePayload">-->
+  <!--    <![CDATA[-->
+  <!--    INSERT INTO uem_request_9997 (-->
+  <!--      message_id,-->
+  <!--      row_num,-->
+  <!--      unicode,-->
+  <!--      tcs,-->
+  <!--      firm_id,-->
+  <!--      details,-->
+  <!--      sub_details,-->
+  <!--      event_type,-->
+  <!--      event_sub_type,-->
+  <!--      begin_date-->
+  <!--    ) VALUES (-->
+  <!--               #{messageId},-->
+  <!--               #{rowNum},-->
+  <!--               #{row.unicode},-->
+  <!--               #{row.tcs},-->
+  <!--               #{row.firmId},-->
+  <!--               #{row.details},-->
+  <!--               #{row.subDetails},-->
+  <!--               #{row.eventType},-->
+  <!--               #{row.eventSubType},-->
+  <!--               #{row.beginDate}-->
+  <!--             )-->
+  <!--    ]]>-->
+  <!--  </insert>-->
+
+  <!--  <select id="findHeader" resultType="com.moex.esb.uemf.model.RequestHeader">-->
+  <!--    <![CDATA[-->
+  <!--    SELECT-->
+  <!--      t.message_id,-->
+  <!--      t.date,-->
+  <!--      t.sender,-->
+  <!--      t.receiver,-->
+  <!--      t.market,-->
+  <!--      t.message_type,-->
+  <!--      t.comment-->
+  <!--    FROM uem_request t-->
+  <!--    WHERE t.message_id = #{messageId};-->
+  <!--    ]]>-->
+  <!--  </select>-->
+
+  <!--  <select id="findPayload" resultType="com.moex.esb.uemf.model.RequestPayload$EM9997">-->
+  <!--    <![CDATA[-->
+  <!--    SELECT-->
+  <!--      t.message_id,-->
+  <!--      t.row_num,-->
+  <!--      t.unicode,-->
+  <!--      t.tcs,-->
+  <!--      t.firm_id,-->
+  <!--      t.details,-->
+  <!--      t.sub_details,-->
+  <!--      t.event_type,-->
+  <!--      t.event_sub_type,-->
+  <!--      t.begin_date-->
+  <!--    FROM uem_request_9997 t-->
+  <!--    WHERE t.message_id = #{messageId}-->
+  <!--    ORDER BY t.row_num ASC;-->
+  <!--    ]]>-->
+  <!--  </select>-->
+
+</mapper>
