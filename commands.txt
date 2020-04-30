@@ -1,4 +1,0 @@
-mvn clean package
-docker build -t config-server:1.0.0 .
-image tag config-server:1.0.0 evgen1000end/config-server:1.0.0
-docker image push evgen1000end/config-server:1.0.0
