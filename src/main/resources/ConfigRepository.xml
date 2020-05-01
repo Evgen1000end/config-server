@@ -9,6 +9,19 @@
 
   </insert>
 
+  <select id="findAdminConfigs" resultType="ru.demkin.esb.configserver.model.ConfigDescriptionDto">
+    SELECT *
+    FROM postgres.public.configs
+    WHERE is_admin = true;
+  </select>
+
+  <!--  <resultMap id="res" type="ru.demkin.esb.configserver.model.ConfigurationDescription">-->
+  <!--    <id property="id" column="id" />-->
+  <!--    <result property="value" column="value"/>-->
+  <!--    <result property="uri" column="uri"/>-->
+  <!--    <result property="label" column="label"/>-->
+  <!--  </resultMap>-->
+
   <!--  <insert id="saveHeader">-->
   <!--    <![CDATA[-->
   <!--    INSERT INTO uem_request (-->

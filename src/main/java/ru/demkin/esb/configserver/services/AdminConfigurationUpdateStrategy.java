@@ -28,12 +28,12 @@ public class AdminConfigurationUpdateStrategy implements ConfigurationUpdateStra
   }
 
   @Override
-  public List<ConfigurationDescription> select() {
+  public List<ConfigurationDescription> select(String username) {
     return null;
   }
 
   @Override
-  public ConfigurationDescription select(String uri) {
+  public ConfigurationDescription select(String username, String uri) {
     return null;
   }
 }

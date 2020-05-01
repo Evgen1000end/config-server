@@ -28,9 +28,6 @@ import java.util.List;
 public class BaseConfigurationController {
 
   @Autowired
-  private ConfigService service;
-
-  @Autowired
   private UserRepository repository;
 
   @Autowired
@@ -46,13 +43,13 @@ public class BaseConfigurationController {
   @Operation(summary = "Получение списка конфигураций")
   @GetMapping(value = "/config")
   public List<ConfigurationDescription> select(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user) {
-    return Collections.emptyList();
+    return factory.base().select(user);
   }
 
   @Operation(summary = "получение конфигурации по URI")
   @GetMapping("/config/{uri}")
   public ConfigurationDescription selectByUrl(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user, @PathVariable("uri") String uri) {
-    return factory.base().select(uri);
+    return null;
   }
 
   @Operation(summary = "Редактирование конфига")

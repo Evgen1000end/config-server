@@ -12,7 +12,7 @@ public interface ConfigurationUpdateStrategy {
 
   void delete(String uri);
 
-  List<ConfigurationDescription> select();
+  List<ConfigurationDescription> select(String username);
 
-  ConfigurationDescription select(String uri);
+  ConfigurationDescription select(String username, String uri);
 }
