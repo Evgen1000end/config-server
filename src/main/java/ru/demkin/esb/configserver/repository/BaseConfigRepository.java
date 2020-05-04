@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @Mapper
-public interface ConfigRepositoty {
+public interface BaseConfigRepository {
 
   void saveConfig(boolean isAdmin, ConfigurationDescription description, String username, String value);
 
@@ -20,4 +20,9 @@ public interface ConfigRepositoty {
   void deleteConfig(String uri, String username, boolean isAdmin);
 
   void updateConfig(boolean isAdmin, ConfigurationDescription description, String username, String value, String uri);
+
+  void deleteConfigByUri(String uri);
+
+  void deleteConfigByUri2(String uri);
+
 }

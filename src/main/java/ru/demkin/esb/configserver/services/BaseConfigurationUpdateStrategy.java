@@ -9,16 +9,15 @@ import ru.demkin.esb.configserver.exception.AlreadyExistException;
 import ru.demkin.esb.configserver.exception.NotFoundException;
 import ru.demkin.esb.configserver.model.ConfigDescriptionDto;
 import ru.demkin.esb.configserver.model.ConfigurationDescription;
-import ru.demkin.esb.configserver.repository.ConfigRepositoty;
+import ru.demkin.esb.configserver.repository.BaseConfigRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrategy {
 
   @Autowired
-  private ConfigRepositoty configRepositoty;
+  private BaseConfigRepository base;
 
   private ConfigurationDescription convert(ConfigDescriptionDto configDescriptionDto) {
     final ConfigurationDescription configurationDescription = new ConfigurationDescription();
@@ -41,11 +40,11 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   public void insert(ConfigurationDescription description, String username) {
     final boolean isAdmin = username == null;
     final String uri = description.getUri();
-    final List<ConfigDescriptionDto> configs = configRepositoty.findConfigsByUrl(username, isAdmin, uri);
+    final List<ConfigDescriptionDto> configs = base.findConfigsByUrl(username, isAdmin, uri);
     if (!configs.isEmpty()) {
-      throw new AlreadyExistException("Configuration already exist for " + Utils.user(username) + "/" + uri);
+      throw new AlreadyExistException("Configuration already exist for " + Utils.user(username) + " and uri = " + uri);
     } else {
-      configRepositoty.saveConfig(isAdmin, description, username, description.getValue());
+      base.saveConfig(isAdmin, description, username, description.getValue());
     }
   }
 
@@ -53,19 +52,19 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   public void update(ConfigurationDescription description, String username, String uri) {
     final boolean isAdmin = username == null;
     select(username, uri);
-    configRepositoty.updateConfig(isAdmin, description, username, description.getValue(), uri);
+    base.updateConfig(isAdmin, description, username, description.getValue(), uri);
   }
 
   @Override
   public void delete(String uri, String username) {
     final boolean isAdmin = isAdmin(username);
     select(username, uri);
-    configRepositoty.deleteConfig(uri, username, isAdmin);
+    base.deleteConfig(uri, username, isAdmin);
   }
 
   @Override
   public List<ConfigurationDescription> select(String username) {
-    return configRepositoty.findConfigs(username, isAdmin(username))
+    return base.findConfigs(username, isAdmin(username))
       .stream()
       .map(this::convert)
       .collect(Collectors.toList());
@@ -73,12 +72,54 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
 
   @Override
   public ConfigurationDescription select(String username, String uri) {
-    List<ConfigDescriptionDto> configDto = configRepositoty.findConfigsByUrl(username, isAdmin(username), uri);
+    List<ConfigDescriptionDto> configDto = base.findConfigsByUrl(username, isAdmin(username), uri);
     if (configDto.isEmpty()) {
-      throw new NotFoundException("Configuration not found for " + Utils.user(username) + "/" + uri);
+      throw new NotFoundException("Configuration not found for " + Utils.user(username) + " and uri = " + uri);
     } else {
       return convert(configDto.get(0));
     }
+  }
+
+  private boolean configExist(String username, String uri) {
+    List<ConfigDescriptionDto> configDto = base.findConfigsByUrl(username, isAdmin(username), uri);
+    return !configDto.isEmpty();
+  }
+
+  @Override
+  public ConfigurationDescription selectForUser(String username, String uri) {
+    // Проверяем есть ли пользовательский конфиг?
+    boolean userConfigExist = configExist(username, uri);
+    if (userConfigExist) {
+      return select(username, uri);
+    } else {
+      // нашли админский конфиг
+      final ConfigurationDescription configurationDescription = selectForAdmin(uri);
+      // Добавили пользовательский на основе админского
+      insert(configurationDescription, username);
+      return configurationDescription;
+    }
+
+  }
+
+  @Override
+  public ConfigurationDescription selectForAdmin(String uri) {
+    // Проверяем есть ли вообще админский конфиг
+    return select(null, uri);
+  }
+
+  @Override
+  public void deleteForAdmin(String uri) {
+    select(null, uri);
+    base.deleteConfigByUri(uri);
+
+  }
+
+  @Override
+  public void updateForAdmin(ConfigurationDescription description, String uri) {
+    select(null, uri);
+    base.deleteConfigByUri2(uri);
+    base.updateConfig(true, description, null, description.getValue(), uri);
+    //Найти и удалить все конифги по uri
   }
 
   private boolean isAdmin(String username) {

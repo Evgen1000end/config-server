@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="ru.demkin.esb.configserver.repository.ConfigRepositoty">
+<mapper namespace="ru.demkin.esb.configserver.repository.BaseConfigRepository">
 
   <insert id="saveConfig">
     INSERT INTO postgres.public.configs (value, is_admin, uri, label, username)
@@ -40,6 +40,19 @@
     FROM postgres.public.configs
     WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
       AND uri = #{uri};
+  </delete>
+
+  <delete id="deleteConfigByUri">
+    DELETE
+    FROM postgres.public.configs
+    WHERE uri = #{uri};
+  </delete>
+
+  <delete id="deleteConfigByUri2">
+    DELETE
+    FROM postgres.public.configs
+    WHERE uri = #{uri}
+      AND is_admin = false;
   </delete>
 
 </mapper>
