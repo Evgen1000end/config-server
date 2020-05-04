@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ConfigDescriptionDto {
-
   private long id;
   private String uri;
   private String label;

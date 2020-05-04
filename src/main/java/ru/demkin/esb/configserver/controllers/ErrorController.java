@@ -11,8 +11,7 @@ import ru.demkin.esb.configserver.exception.NotFoundException;
 import ru.demkin.esb.configserver.model.ErrorResponse;
 
 @ControllerAdvice
-public class ErrorController  {
-//extends ResponseEntityExceptionHandler
+public class ErrorController {
 
   @ExceptionHandler(value = NotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)

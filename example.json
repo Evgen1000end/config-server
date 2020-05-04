@@ -1,5 +1,7 @@
 {
   "uri": "stress",
   "label": "Stress Test",
-  "value": {"windows": 1}
+  "value": {
+    "windows": 1
+  }
 }

@@ -13,5 +13,11 @@ public interface ConfigRepositoty {
 
   void saveConfig(boolean isAdmin, ConfigurationDescription description, String username, String value);
 
-  List<ConfigDescriptionDto> findAdminConfigs();
+  List<ConfigDescriptionDto> findConfigs(String username, boolean isAdmin);
+
+  List<ConfigDescriptionDto> findConfigsByUrl(String username, boolean isAdmin, String uri);
+
+  void deleteConfig(String uri, String username, boolean isAdmin);
+
+  void updateConfig(boolean isAdmin, ConfigurationDescription description, String username, String value, String uri);
 }

@@ -21,23 +21,19 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   private ConfigRepositoty configRepositoty;
 
   private ConfigurationDescription convert(ConfigDescriptionDto configDescriptionDto) {
-    ConfigurationDescription configurationDescription = new ConfigurationDescription();
+    final ConfigurationDescription configurationDescription = new ConfigurationDescription();
     configurationDescription.setId(configDescriptionDto.getId());
     configurationDescription.setLabel(configDescriptionDto.getLabel());
     configurationDescription.setUri(configDescriptionDto.getUri());
-
-    String value = configDescriptionDto.getValue();
-
-    ObjectMapper mapper = new ObjectMapper();
+    final String value = configDescriptionDto.getValue();
+    final ObjectMapper mapper = new ObjectMapper();
     JsonNode actualObj = null;
     try {
       actualObj = mapper.readTree(value);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
-
     configurationDescription.setValue(actualObj);
-
     return configurationDescription;
   }
 
@@ -45,8 +41,8 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   public void insert(ConfigurationDescription description, String username) {
     final boolean isAdmin = username == null;
     final String uri = description.getUri();
-    final Optional<ConfigurationDescription> configurationDescription = selectInternal(username, uri);
-    if (configurationDescription.isPresent()) {
+    final List<ConfigDescriptionDto> configs = configRepositoty.findConfigsByUrl(username, isAdmin, uri);
+    if (!configs.isEmpty()) {
       throw new AlreadyExistException("Configuration already exist for " + Utils.user(username) + "/" + uri);
     } else {
       configRepositoty.saveConfig(isAdmin, description, username, description.getValue());
@@ -54,36 +50,40 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   }
 
   @Override
-  public void update(ConfigurationDescription description, String username) {
+  public void update(ConfigurationDescription description, String username, String uri) {
+    final boolean isAdmin = username == null;
+    select(username, uri);
+    configRepositoty.updateConfig(isAdmin, description, username, description.getValue(), uri);
   }
 
   @Override
-  public void delete(String uri) {
-
+  public void delete(String uri, String username) {
+    final boolean isAdmin = isAdmin(username);
+    select(username, uri);
+    configRepositoty.deleteConfig(uri, username, isAdmin);
   }
 
   @Override
   public List<ConfigurationDescription> select(String username) {
-    if (username == null) {
-      return configRepositoty.findAdminConfigs()
-        .stream()
-        .map(this::convert)
-        .collect(Collectors.toList());
-    } else {
-      throw new IllegalStateException("Not implemented yet!");
-    }
+    return configRepositoty.findConfigs(username, isAdmin(username))
+      .stream()
+      .map(this::convert)
+      .collect(Collectors.toList());
   }
 
   @Override
   public ConfigurationDescription select(String username, String uri) {
-    return selectInternal(username, uri).orElseThrow(() -> new NotFoundException("Configuration not found for " + Utils.user(username) + "/" + uri));
+    List<ConfigDescriptionDto> configDto = configRepositoty.findConfigsByUrl(username, isAdmin(username), uri);
+    if (configDto.isEmpty()) {
+      throw new NotFoundException("Configuration not found for " + Utils.user(username) + "/" + uri);
+    } else {
+      return convert(configDto.get(0));
+    }
   }
 
-  private Optional<ConfigurationDescription> selectInternal(String username, String uri) {
-    return select(username)
-      .stream()
-      .filter(description -> description.getUri().equals(uri))
-      .findFirst();
+  private boolean isAdmin(String username) {
+    return username == null;
   }
+
 }
 

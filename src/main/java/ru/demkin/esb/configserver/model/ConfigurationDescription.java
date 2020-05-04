@@ -15,9 +15,6 @@ public class ConfigurationDescription {
   private String uri;
   private String label;
 
-  // @JsonDeserialize(using = NestedDeserializer.class)
-  // @JsonSerialize(using = NestedSerializer.class)
-
   @JsonRawValue
   private String value;
 

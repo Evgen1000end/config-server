@@ -18,12 +18,12 @@ public class AdminConfigurationUpdateStrategy implements ConfigurationUpdateStra
   }
 
   @Override
-  public void update(ConfigurationDescription description, String username) {
+  public void update(ConfigurationDescription description, String username, String uri) {
 
   }
 
   @Override
-  public void delete(String uri) {
+  public void delete(String uri, String username) {
 
   }
 

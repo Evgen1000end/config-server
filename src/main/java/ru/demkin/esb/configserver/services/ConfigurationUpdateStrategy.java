@@ -8,9 +8,9 @@ public interface ConfigurationUpdateStrategy {
 
   void insert(ConfigurationDescription description, String username);
 
-  void update(ConfigurationDescription description, String username);
+  void update(ConfigurationDescription description, String username, String uri);
 
-  void delete(String uri);
+  void delete(String uri, String username);
 
   List<ConfigurationDescription> select(String username);
 

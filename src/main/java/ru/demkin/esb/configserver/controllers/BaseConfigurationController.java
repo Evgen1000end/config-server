@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.demkin.esb.configserver.Protocol;
 import ru.demkin.esb.configserver.model.ConfigurationDescription;
 import ru.demkin.esb.configserver.repository.UserRepository;
-import ru.demkin.esb.configserver.services.ConfigService;
 import ru.demkin.esb.configserver.services.StrategyFactory;
 
 import java.util.Collections;
@@ -49,21 +48,21 @@ public class BaseConfigurationController {
   @Operation(summary = "получение конфигурации по URI")
   @GetMapping("/config/{uri}")
   public ConfigurationDescription selectByUrl(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user, @PathVariable("uri") String uri) {
-    return null;
+    return factory.base().select(user, uri);
   }
 
   @Operation(summary = "Редактирование конфига")
   @PutMapping("/config/{uri}")
   public void update(@RequestBody ConfigurationDescription value, @RequestHeader(value = Protocol.HEADER_USER,
     required = false) String user, @PathVariable("uri") String uri) {
-    factory.base().update(value, uri);
+    factory.base().update(value, user, uri);
   }
 
   @Operation(summary = "Удаление конфига")
   @DeleteMapping("/config/{uri}")
   public void delete(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
     @PathVariable("uri") String uri) {
-    factory.base().delete(uri);
+    factory.base().delete(uri, user);
   }
 
   @Operation(summary = "Список пользователей")
