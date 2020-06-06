@@ -2,6 +2,7 @@ package ru.demkin.esb.configserver.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,62 +11,142 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.demkin.esb.configserver.ApplicationProperties;
 import ru.demkin.esb.configserver.Protocol;
+import ru.demkin.esb.configserver.exception.ForbiddenException;
 import ru.demkin.esb.configserver.model.ConfigurationDescription;
 import ru.demkin.esb.configserver.services.ConfigurationUpdateStrategy;
 
 @RestController
 @Tag(name = "BUSINESS", description = "Управление конфигурациями - бизнес уровень")
+@RequestMapping("/v1")
 public class ServiceConfigurationController {
 
   @Autowired
   private ConfigurationUpdateStrategy base;
 
-  @Operation(summary = "Создание конфигурации")
-  @PostMapping("/config")
-  public void insert(@RequestBody ConfigurationDescription value, @RequestHeader(value = Protocol.HEADER_USER,
-    required = false) String user) {
-    if (isAdmin(user)) {
-      base.insert(value, user);
+  @Autowired
+  private ApplicationProperties properties;
+
+  private String name(String user, String token) {
+    final boolean tokenEmpty = StringUtils.isBlank(token);
+    final boolean userEmpty = StringUtils.isBlank(user);
+    if (tokenEmpty) {
+      if (userEmpty) {
+        if (properties.isAuthEnabled()) {
+          throw new ForbiddenException("Access denied. Empty token for ADMIN.");
+        } else {
+          return null;
+        }
+      } else {
+        return user;
+      }
     } else {
-      throw new IllegalArgumentException("Unsupported operation. User " + user + " can't create config.");
+      if (tokenIsValid(token)) {
+        return null;
+      } else {
+        throw new ForbiddenException("Token " + token + " invalid");
+      }
+    }
+  }
+
+  private boolean tokenIsValid(String token) {
+    return true;
+  }
+
+  @Operation(summary = "Создание мета конфигурации")
+  @PostMapping("/config/{group}/meta")
+  public void insertMeta(
+    @RequestBody ConfigurationDescription value,
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group) {
+    final String name = name(user, token);
+    if (isAdmin(name)) {
+      base.insert(value, name, group);
+    } else {
+      throw new IllegalArgumentException("Unsupported operation. User " + user + " can't create meta config.");
+    }
+  }
+
+  @Operation(summary = "Получение мета конфигурации по URI")
+  @GetMapping("/config/{group}/{uri}/meta")
+  public ConfigurationDescription selectMetaByUrl(
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group,
+    @PathVariable("uri") String uri) {
+    final String name = name(user, token);
+    if (isAdmin(name)) {
+      return base.selectForAdmin(uri);
+    } else {
+      return base.selectForUser(name, uri);
+    }
+  }
+
+  @Operation(summary = "Редактирование мета конфигурации конфига")
+  @PutMapping("/config/{group}/{uri}/meta")
+  public void updateMeta(@RequestBody ConfigurationDescription value, @RequestHeader(value = Protocol.HEADER_USER,
+    required = false) String user, @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable("uri") String uri,
+    @PathVariable(value = "group") String group) {
+    final String name = name(user, token);
+    if (isAdmin(name)) {
+      base.updateForAdmin(value, uri);
+    } else {
+      //
+      // base.update(value, user, uri);
+      throw new IllegalArgumentException("Unsupported operation. User " + user + " can't update meta config.");
+    }
+  }
+
+  @Operation(summary = "Удаление мета конфигурации конфига")
+  @DeleteMapping("/config/{uri}")
+  public void deleteMeta(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @PathVariable("uri") String uri, @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group) {
+    final String name = name(user, token);
+
+    if (isAdmin(name)) {
+      base.deleteForAdmin(uri);
+    } else {
+      throw new IllegalArgumentException("Unsupported operation. User " + user + " can't delete meta config.");
+      //  base.delete(uri, user);
     }
   }
 
   @Operation(summary = "Получение конфигурации по URI")
-  @GetMapping("/config/{uri}")
-  public ConfigurationDescription selectByUrl(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user, @PathVariable("uri") String uri) {
-    if (isAdmin(user)) {
-      return base.selectForAdmin(uri);
-    } else {
-      return base.selectForUser(user, uri);
-    }
-  }
-
-  @Operation(summary = "Редактирование конфига")
-  @PutMapping("/config/{uri}")
-  public void update(@RequestBody ConfigurationDescription value, @RequestHeader(value = Protocol.HEADER_USER,
-    required = false) String user, @PathVariable("uri") String uri) {
-    if (isAdmin(user)) {
-      base.updateForAdmin(value, uri);
-    } else {
-      base.update(value, user, uri);
-    }
-  }
-
-  @Operation(summary = "Удаление конфига")
-  @DeleteMapping("/config/{uri}")
-  public void delete(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+  @GetMapping("/config/{group}/{uri}")
+  public String selectByUrl(
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
-    if (isAdmin(user)) {
-      base.deleteForAdmin(uri);
+    final String name = name(user, token);
+    if (isAdmin(name)) {
+      return base.selectConfigForAdmin(uri);
     } else {
-      base.delete(uri, user);
+      return base.selectConfigForUser(name, uri);
     }
   }
 
-  //TODO - group!!
+  @Operation(summary = "Редактирование конфигурации")
+  @PutMapping("/config/{group}/{uri}")
+  public void updateConfig
+    (@RequestBody String value,
+      @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+      @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+      @PathVariable(value = "group") String group,
+      @PathVariable("uri") String uri) {
+    final String name = name(user, token);
+    if (isAdmin(name)) {
+      base.updateConfigForAdmin(value, uri);
+    } else {
+      base.updateConfigForUser(name, value, uri);
+    }
+  }
 
   private boolean isAdmin(String username) {
     return username == null;

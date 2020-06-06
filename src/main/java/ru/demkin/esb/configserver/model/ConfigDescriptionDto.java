@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class ConfigDescriptionDto {
   private long id;
+  private long groupId;
   private String uri;
   private String label;
   private String value;
+  private String groupUri;
 
   public long getId() {
     return id;
@@ -42,4 +44,19 @@ public class ConfigDescriptionDto {
     this.value = value;
   }
 
+  public long getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(long groupId) {
+    this.groupId = groupId;
+  }
+
+  public String getGroupUri() {
+    return groupUri;
+  }
+
+  public void setGroupUri(String groupUri) {
+    this.groupUri = groupUri;
+  }
 }

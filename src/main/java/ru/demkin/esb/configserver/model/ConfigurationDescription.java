@@ -9,14 +9,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ConfigurationDescription {
-  public static final ConfigurationDescription EMPTY = new ConfigurationDescription();
 
   private long id;
+  private Long groupId;
+  private String groupUri;
   private String uri;
   private String label;
 
-  @JsonRawValue
-  private String value;
+//  @JsonRawValue
+//  private String value;
 
   public long getId() {
     return id;
@@ -42,13 +43,28 @@ public class ConfigurationDescription {
     this.label = label;
   }
 
-  public String getValue() {
-    return value;
+//  public String getValue() {
+//    return value;
+//  }
+//
+//  @JsonProperty(value = "value")
+//  public void setValue(JsonNode node) {
+//    this.value = node.toString();
+//  }
+
+  public Long getGroupId() {
+    return groupId;
   }
 
-  @JsonProperty(value = "value")
-  public void setValue(JsonNode node) {
-    this.value = node.toString();
+  public void setGroupId(Long groupId) {
+    this.groupId = groupId;
   }
 
+  public String getGroupUri() {
+    return groupUri;
+  }
+
+  public void setGroupUri(String groupUri) {
+    this.groupUri = groupUri;
+  }
 }

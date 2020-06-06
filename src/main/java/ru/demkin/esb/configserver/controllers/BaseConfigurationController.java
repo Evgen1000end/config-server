@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,12 +21,12 @@ import ru.demkin.esb.configserver.model.Group;
 import ru.demkin.esb.configserver.repository.UserRepository;
 import ru.demkin.esb.configserver.services.ConfigurationUpdateStrategy;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Tag(name = "API", description = "Управление конфигурациями - административный уровень")
-@RequestMapping(value = "/base")
+@RequestMapping(value = "/v1/base")
 public class BaseConfigurationController {
 
   @Autowired
@@ -64,7 +63,6 @@ public class BaseConfigurationController {
   private boolean tokenIsValid(String token) {
     return true;
   }
-
 
   @Operation(summary = "Создание группы")
   @PostMapping("/group")
@@ -103,7 +101,7 @@ public class BaseConfigurationController {
   @PutMapping("/group/{uri}")
   public void updateGroup(
     @RequestBody Group value,
-    @RequestHeader(value = Protocol.HEADER_USER,  required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
     @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri) {
     final String name = name(user, token);
@@ -128,54 +126,92 @@ public class BaseConfigurationController {
     }
   }
 
-
-  //TODO - группы и токены
-  @Operation(summary = "Создание конфигурации")
-  @PostMapping("/config")
-  public void insert(
+  @Operation(summary = "Создание метаинформации конфигурации")
+  @PostMapping("/config/{group}/meta")
+  public void insertMeta(
     @RequestBody ConfigurationDescription value,
-    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user) {
-    base.insert(value, user);
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group) {
+    final String name = name(user, token);
+    base.insert(value, name, group);
   }
 
-  //TODO - группы и токены
-  @Operation(summary = "Получение списка конфигураций")
-  @GetMapping(value = "/config")
-  public List<ConfigurationDescription> select(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user) {
-    return base.select(user);
+  @Operation(summary = "Получение списка метаинформации для конфигураций для группы")
+  @GetMapping(value = "/config/{group}/meta")
+  public List<ConfigurationDescription> selectMetaByGroup(
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group) {
+    final String name = name(user, token);
+    return base
+      .select(name)
+      .stream()
+      .filter(c -> c.getGroupUri().equals(group))
+      .collect(Collectors.toList());
   }
 
-  //TODO - группы и токены
-  @Operation(summary = "Gолучение конфигурации по URI")
-  @GetMapping("/config/{uri}")
-  public ConfigurationDescription selectByUrl(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user, @PathVariable("uri") String uri) {
-    return base.select(user, uri);
-  }
-
-  //TODO - группы и токены
-  @Operation(summary = "Редактирование конфига")
-  @PutMapping("/config/{uri}")
-  public void update(@RequestBody ConfigurationDescription value, @RequestHeader(value = Protocol.HEADER_USER,
-    required = false) String user, @PathVariable("uri") String uri) {
-    base.update(value, user, uri);
-  }
-
-
-  //TODO - группы и токены
-  @Operation(summary = "Удаление конфига")
-  @DeleteMapping("/config/{uri}")
-  public void delete(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+  @Operation(summary = "Получение метаинформации конфигурации по URI")
+  @GetMapping("/config/{group}/{uri}/meta")
+  public ConfigurationDescription selectMetaByUrl(
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
-    base.delete(uri, user);
+    final String name = name(user, token);
+    return base.select(name, uri);
   }
 
-  //TODO - группы и токены
+  @Operation(summary = "Получение конфигурации по URI")
+  @GetMapping("/config/{group}/{uri}")
+  public String selectByUrl(
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group,
+    @PathVariable("uri") String uri) {
+    final String name = name(user, token);
+    return base.selectConfig(name, uri);
+  }
+
+  @Operation(summary = "Редактирование конфигурации")
+  @PutMapping("/config/{group}/{uri}")
+  public void updateConfig
+    (@RequestBody String value,
+      @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+      @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+      @PathVariable(value = "group") String group,
+      @PathVariable("uri") String uri) {
+    final String name = name(user, token);
+    base.updateConfig(value, name, uri);
+  }
+
+  @Operation(summary = "Редактирование метаинформации конфигурации")
+  @PutMapping("/config/{group}/{uri}/meta")
+  public void update
+    (@RequestBody ConfigurationDescription value,
+      @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+      @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+      @PathVariable(value = "group") String group,
+      @PathVariable("uri") String uri) {
+    final String name = name(user, token);
+    base.update(value, name, uri);
+  }
+
+  @Operation(summary = "Удаление метаинформации конфигурации")
+  @DeleteMapping("/config/{group}/{uri}/meta")
+  public void delete(
+    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @PathVariable(value = "group") String group,
+    @PathVariable("uri") String uri) {
+    final String name = name(user, token);
+    base.delete(uri, name);
+  }
+
   @Operation(summary = "Список пользователей")
   @GetMapping("/users")
   public List<String> findUsers() {
     return repository.findUsers();
   }
-
-  // TODO - разделить мета и не мета
 
 }

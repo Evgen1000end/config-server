@@ -13,7 +13,8 @@ import java.util.List;
 @Mapper
 public interface BaseConfigRepository {
 
-  void saveConfig(boolean isAdmin, ConfigurationDescription description, String username);
+  void saveConfig(boolean isAdmin, ConfigurationDescription description, String username, long groupId,
+    String groupUrl);
 
   List<ConfigDescriptionDto> findConfigs(String username, boolean isAdmin);
 
@@ -23,10 +24,11 @@ public interface BaseConfigRepository {
 
   void updateConfig(boolean isAdmin, ConfigurationDescription description, String username, String uri);
 
+  void updateConfigValue(boolean isAdmin, String config, String username, String uri);
+
   void deleteConfigByUri(String uri);
 
   void deleteConfigByUri2(String uri);
-
 
   void saveGroup(@Param("groups") Group groups);
 
@@ -37,7 +39,5 @@ public interface BaseConfigRepository {
   void deleteGroup(String uri);
 
   void updateGroup(@Param("groups") Group groups, String uri);
-
-
 
 }

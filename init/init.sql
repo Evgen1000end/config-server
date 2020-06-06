@@ -19,13 +19,25 @@ CREATE TABLE public.groups (
 
 CREATE TABLE public.configs (
     id SERIAL PRIMARY KEY,
-    value text NOT NULL,
+    value text,
     is_admin BOOLEAN NOT NULL,
     uri VARCHAR NOT NULL,
     label VARCHAR,
     username VARCHAR,
+    groupUri VARCHAR,
     group_id INTEGER REFERENCES public.groups(id)
 );
 
+INSERT INTO public.groups (uri, label)  VALUES ('rm', 'Расчетные модули - финансовая математика');
+INSERT INTO public.groups (uri, label)  VALUES ('integration', 'Интеграционная платформа');
+INSERT INTO public.groups (uri, label)  VALUES ('ui', 'Графический интерфейс пользователя');
+INSERT INTO public.groups (uri, label)  VALUES ('trash', 'Выжатый сахарный тростник');
 
+INSERT INTO public.configs (is_admin, uri, label, username, groupUri, group_id, value)
+VALUES (true, 'argus', 'Мониторинг УФЭС', null , 'integration', 2, '{}');
 
+INSERT INTO public.configs (value, is_admin, uri, label, username, groupUri, group_id)
+VALUES ('{"key": "overrided"}', false , 'argus', 'Мониторинг УФЭС', 'Eugene' , 'integration', 2);
+
+INSERT INTO public.configs (is_admin, uri, label, username, groupUri, group_id, value)
+VALUES (true, 'blackhole', 'ICT 2.0', null , 'integration', 2, '{}');

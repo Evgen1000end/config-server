@@ -6,6 +6,4 @@ public class Utils {
     return username == null ? "ADMIN" : "USER = " + username;
   }
 
-
-
 }

@@ -4,21 +4,31 @@
 <mapper namespace="ru.demkin.esb.configserver.repository.BaseConfigRepository">
 
   <insert id="saveConfig">
-    INSERT INTO postgres.public.configs (value, is_admin, uri, label, username)
-    values (#{description.value}, #{isAdmin}, #{description.uri}, #{description.label}, #{username})
+    INSERT INTO postgres.public.configs (is_admin, uri, label, username, group_id, groupuri, value)
+    values (#{isAdmin}, #{description.uri}, #{description.label}, #{username}, #{groupId}, #{groupUrl}, '{}')
 
   </insert>
 
   <update id="updateConfig">
     UPDATE
       postgres.public.configs
-    SET value    = #{description.value},
-        is_admin = #{isAdmin},
+    SET is_admin = #{isAdmin},
         uri      = #{uri},
         label    = #{description.label}
     WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
       AND uri = #{uri}
   </update>
+
+  <update id="updateConfigValue">
+    UPDATE
+      postgres.public.configs
+    SET is_admin = #{isAdmin},
+        uri      = #{uri},
+        value    = #{config}
+    WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
+      AND uri = #{uri}
+  </update>
+
 
   <!--  Методы поиска-->
   <select id="findConfigs" resultType="ru.demkin.esb.configserver.model.ConfigDescriptionDto">
