@@ -31,7 +31,6 @@ public class ServiceConfigurationController {
     } else {
       throw new IllegalArgumentException("Unsupported operation. User " + user + " can't create config.");
     }
-
   }
 
   @Operation(summary = "Получение конфигурации по URI")
@@ -65,6 +64,8 @@ public class ServiceConfigurationController {
       base.delete(uri, user);
     }
   }
+
+  //TODO - group!!
 
   private boolean isAdmin(String username) {
     return username == null;

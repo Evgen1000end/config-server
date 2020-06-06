@@ -5,14 +5,14 @@
 
   <insert id="saveConfig">
     INSERT INTO postgres.public.configs (value, is_admin, uri, label, username)
-    values (#{value}, #{isAdmin}, #{description.uri}, #{description.label}, #{username})
+    values (#{description.value}, #{isAdmin}, #{description.uri}, #{description.label}, #{username})
 
   </insert>
 
   <update id="updateConfig">
     UPDATE
       postgres.public.configs
-    SET value    = #{value},
+    SET value    = #{description.value},
         is_admin = #{isAdmin},
         uri      = #{uri},
         label    = #{description.label}
@@ -53,6 +53,44 @@
     FROM postgres.public.configs
     WHERE uri = #{uri}
       AND is_admin = false;
+  </delete>
+
+<!--  Операция работы с группами-->
+
+  <insert id="saveGroup">
+    INSERT INTO postgres.public.groups (uri, label)
+    values (#{groups.uri}, #{groups.label})
+
+  </insert>
+
+  <update id="updateGroup">
+    UPDATE
+      postgres.public.groups
+    SET   label = #{groups.label}
+    WHERE uri = #{uri}
+  </update>
+
+  <!--  Методы поиска-->
+  <select id="findGroups" resultType="ru.demkin.esb.configserver.model.Group">
+    SELECT
+      id, uri, label
+    FROM
+        postgres.public.groups
+  </select>
+
+  <select id="findGroupByUrl" resultType="ru.demkin.esb.configserver.model.Group">
+    SELECT
+      id, uri, label
+    FROM
+      postgres.public.groups
+    WHERE
+        uri = #{uri}
+  </select>
+
+  <delete id="deleteGroup">
+    DELETE
+    FROM postgres.public.groups
+    WHERE uri = #{uri};
   </delete>
 
 </mapper>

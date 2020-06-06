@@ -11,13 +11,20 @@ SET row_security = off;
 
 CREATE DATABASE config;
 
+CREATE TABLE public.groups (
+    id SERIAL PRIMARY KEY,
+    uri VARCHAR NOT NULL,
+    label VARCHAR
+);
+
 CREATE TABLE public.configs (
     id SERIAL PRIMARY KEY,
     value text NOT NULL,
     is_admin BOOLEAN NOT NULL,
     uri VARCHAR NOT NULL,
     label VARCHAR,
-    username VARCHAR
+    username VARCHAR,
+    group_id INTEGER REFERENCES public.groups(id)
 );
 
 

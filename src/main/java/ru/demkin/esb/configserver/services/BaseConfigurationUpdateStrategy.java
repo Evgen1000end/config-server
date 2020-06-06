@@ -9,6 +9,7 @@ import ru.demkin.esb.configserver.exception.AlreadyExistException;
 import ru.demkin.esb.configserver.exception.NotFoundException;
 import ru.demkin.esb.configserver.model.ConfigDescriptionDto;
 import ru.demkin.esb.configserver.model.ConfigurationDescription;
+import ru.demkin.esb.configserver.model.Group;
 import ru.demkin.esb.configserver.repository.BaseConfigRepository;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
     if (!configs.isEmpty()) {
       throw new AlreadyExistException("Configuration already exist for " + Utils.user(username) + " and uri = " + uri);
     } else {
-      base.saveConfig(isAdmin, description, username, description.getValue());
+      base.saveConfig(isAdmin, description, username);
     }
   }
 
@@ -52,7 +53,7 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   public void update(ConfigurationDescription description, String username, String uri) {
     final boolean isAdmin = username == null;
     select(username, uri);
-    base.updateConfig(isAdmin, description, username, description.getValue(), uri);
+    base.updateConfig(isAdmin, description, username, uri);
   }
 
   @Override
@@ -71,8 +72,46 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   }
 
   @Override
+  public void insertGroup(Group group) {
+    List<Group> groups = base.findGroupByUrl(group.getUri());
+    if (!groups.isEmpty()) {
+      throw new AlreadyExistException("Group " + group.getUri()  + "  already exist");
+    } else {
+      base.saveGroup(group);
+    }
+
+  }
+
+  @Override
+  public void updateGroup(Group group, String uri) {
+    findGroupByUri(uri);
+    base.updateGroup(group, uri);
+  }
+
+  @Override
+  public void deleteGroup(String uri) {
+    findGroupByUri(uri);
+    base.deleteGroup(uri);
+  }
+
+  @Override
+  public List<Group> findAllGroups() {
+    return base.findGroups();
+  }
+
+  @Override
+  public Group findGroupByUri(String uri) {
+    final List<Group> groups = base.findGroupByUrl(uri);
+    if (groups.isEmpty()) {
+      throw new NotFoundException("Group " + uri + " not found.");
+    } else {
+      return groups.get(0);
+    }
+  }
+
+  @Override
   public ConfigurationDescription select(String username, String uri) {
-    List<ConfigDescriptionDto> configDto = base.findConfigsByUrl(username, isAdmin(username), uri);
+    final List<ConfigDescriptionDto> configDto = base.findConfigsByUrl(username, isAdmin(username), uri);
     if (configDto.isEmpty()) {
       throw new NotFoundException("Configuration not found for " + Utils.user(username) + " and uri = " + uri);
     } else {
@@ -118,8 +157,7 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   public void updateForAdmin(ConfigurationDescription description, String uri) {
     select(null, uri);
     base.deleteConfigByUri2(uri);
-    base.updateConfig(true, description, null, description.getValue(), uri);
-    //Найти и удалить все конифги по uri
+    base.updateConfig(true, description, null, uri);
   }
 
   private boolean isAdmin(String username) {

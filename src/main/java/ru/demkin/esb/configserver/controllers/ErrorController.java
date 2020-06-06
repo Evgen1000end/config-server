@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.demkin.esb.configserver.exception.AlreadyExistException;
+import ru.demkin.esb.configserver.exception.ForbiddenException;
 import ru.demkin.esb.configserver.exception.NotFoundException;
 import ru.demkin.esb.configserver.model.ErrorResponse;
 
@@ -32,6 +33,13 @@ public class ErrorController {
   public ResponseEntity<ErrorResponse> alreadyExistException(AlreadyExistException e) {
     ErrorResponse response = ErrorResponse.of(e);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+  }
+
+  @ExceptionHandler(value = ForbiddenException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ResponseEntity<ErrorResponse> forbiddenException(ForbiddenException e) {
+    ErrorResponse response = ErrorResponse.of(e);
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
   }
 
 }
