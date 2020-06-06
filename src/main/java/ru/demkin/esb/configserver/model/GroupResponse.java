@@ -3,7 +3,7 @@ package ru.demkin.esb.configserver.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Group {
+public class GroupResponse {
 
   private long id;
   private String uri;

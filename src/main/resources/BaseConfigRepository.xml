@@ -29,16 +29,30 @@
       AND uri = #{uri}
   </update>
 
+  <select id="findConfig" resultType="java.lang.String">
+    SELECT value
+    FROM postgres.public.configs
+    WHERE (is_admin = #{isAdmin} and username is null)
+       or username = #{username};
+  </select>
+
+  <select id="findConfigByUrl" resultType="java.lang.String">
+    SELECT value
+    FROM postgres.public.configs
+    WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
+      AND uri = #{uri};
+  </select>
+
 
   <!--  Методы поиска-->
-  <select id="findConfigs" resultType="ru.demkin.esb.configserver.model.ConfigDescriptionDto">
+  <select id="findMeta" resultType="ru.demkin.esb.configserver.model.ConfigurationMetaResponse">
     SELECT *
     FROM postgres.public.configs
     WHERE (is_admin = #{isAdmin} and username is null)
        or username = #{username};
   </select>
 
-  <select id="findConfigsByUrl" resultType="ru.demkin.esb.configserver.model.ConfigDescriptionDto">
+  <select id="findMetaByUrl" resultType="ru.demkin.esb.configserver.model.ConfigurationMetaResponse">
     SELECT *
     FROM postgres.public.configs
     WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
@@ -81,14 +95,14 @@
   </update>
 
   <!--  Методы поиска-->
-  <select id="findGroups" resultType="ru.demkin.esb.configserver.model.Group">
+  <select id="findGroups" resultType="ru.demkin.esb.configserver.model.GroupResponse">
     SELECT
       id, uri, label
     FROM
         postgres.public.groups
   </select>
 
-  <select id="findGroupByUrl" resultType="ru.demkin.esb.configserver.model.Group">
+  <select id="findGroupByUrl" resultType="ru.demkin.esb.configserver.model.GroupResponse">
     SELECT
       id, uri, label
     FROM

@@ -1,16 +1,18 @@
 package ru.demkin.esb.configserver.services;
 
-import ru.demkin.esb.configserver.model.ConfigurationDescription;
-import ru.demkin.esb.configserver.model.Group;
+import ru.demkin.esb.configserver.model.ConfigurationMetaRequest;
+import ru.demkin.esb.configserver.model.ConfigurationMetaResponse;
+import ru.demkin.esb.configserver.model.GroupRequest;
+import ru.demkin.esb.configserver.model.GroupResponse;
 
 import java.util.List;
 
 public interface ConfigurationUpdateStrategy {
 
   // Низкоуровневые сервисы поиска
-  void insert(ConfigurationDescription description, String username, String group);
+  void insert(ConfigurationMetaRequest description, String username, String group);
 
-  void update(ConfigurationDescription description, String username, String uri);
+  void update(ConfigurationMetaRequest description, String username, String uri);
 
   void updateConfig(String config, String username, String uri);
 
@@ -20,26 +22,26 @@ public interface ConfigurationUpdateStrategy {
 
   void delete(String uri, String username);
 
-  List<ConfigurationDescription> select(String username);
+  List<ConfigurationMetaResponse> select(String username);
 
   // API для групп
-  void insertGroup(Group group);
+  void insertGroup(GroupRequest group);
 
-  void updateGroup(Group group, String uri);
+  void updateGroup(GroupRequest group, String uri);
 
   void deleteGroup(String uri);
 
-  List<Group> findAllGroups();
+  List<GroupResponse> findAllGroups();
 
-  Group findGroupByUri(String uri);
+  GroupResponse findGroupByUri(String uri);
 
-  ConfigurationDescription select(String username, String uri);
+  ConfigurationMetaResponse select(String username, String uri);
 
   String selectConfig(String username, String uri);
 
-  ConfigurationDescription selectForUser(String username, String uri);
+  ConfigurationMetaResponse selectForUser(String username, String uri);
 
-  ConfigurationDescription selectForAdmin(String uri);
+  ConfigurationMetaResponse selectForAdmin(String uri);
 
   String selectConfigForUser(String username, String uri);
 
@@ -47,6 +49,6 @@ public interface ConfigurationUpdateStrategy {
 
   void deleteForAdmin(String uri);
 
-  void updateForAdmin(ConfigurationDescription description, String uri);
+  void updateForAdmin(ConfigurationMetaRequest description, String uri);
 
 }

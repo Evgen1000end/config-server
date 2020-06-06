@@ -1,23 +1,16 @@
 package ru.demkin.esb.configserver.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ConfigurationDescription {
-
+public class ConfigurationMetaResponse {
   private long id;
-  private Long groupId;
-  private String groupUri;
+  private long groupId;
   private String uri;
   private String label;
-
-//  @JsonRawValue
-//  private String value;
+  // private String value;
+  private String groupUri;
 
   public long getId() {
     return id;
@@ -47,16 +40,15 @@ public class ConfigurationDescription {
 //    return value;
 //  }
 //
-//  @JsonProperty(value = "value")
-//  public void setValue(JsonNode node) {
-//    this.value = node.toString();
+//  public void setValue(String value) {
+//    this.value = value;
 //  }
 
-  public Long getGroupId() {
+  public long getGroupId() {
     return groupId;
   }
 
-  public void setGroupId(Long groupId) {
+  public void setGroupId(long groupId) {
     this.groupId = groupId;
   }
 

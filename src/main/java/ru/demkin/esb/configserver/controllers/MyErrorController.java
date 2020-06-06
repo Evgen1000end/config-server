@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.demkin.esb.configserver.exception.AlreadyExistException;
 import ru.demkin.esb.configserver.exception.ForbiddenException;
@@ -12,7 +13,7 @@ import ru.demkin.esb.configserver.exception.NotFoundException;
 import ru.demkin.esb.configserver.model.ErrorResponse;
 
 @ControllerAdvice
-public class ErrorController {
+public class MyErrorController {
 
   @ExceptionHandler(value = NotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -40,6 +41,13 @@ public class ErrorController {
   public ResponseEntity<ErrorResponse> forbiddenException(ForbiddenException e) {
     ErrorResponse response = ErrorResponse.of(e);
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+  }
+
+  @ExceptionHandler(NoHandlerFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ResponseEntity<ErrorResponse> error(Exception e) {
+    ErrorResponse response = ErrorResponse.of(e);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
   }
 
 }
