@@ -103,7 +103,7 @@ public class ServiceConfigurationController {
   }
 
   @Operation(summary = "Удаление мета конфигурации конфига")
-  @DeleteMapping("/config/{uri}")
+  @DeleteMapping("/config/{group}/{uri}/meta")
   public void deleteMeta(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
     @PathVariable("uri") String uri, @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group) {
