@@ -8,6 +8,7 @@
     SELECT DISTINCT(username)
     FROM postgres.public.configs
     WHERE is_admin = false
+    ORDER BY created_at DESC
     ]]>
   </select>
 

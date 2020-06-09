@@ -29,6 +29,9 @@ public class ServiceConfigurationController {
   private ConfigurationUpdateStrategy base;
 
   @Autowired
+  private AuthController authController;
+
+  @Autowired
   private ApplicationProperties properties;
 
   private String name(String user, String token) {
@@ -54,7 +57,7 @@ public class ServiceConfigurationController {
   }
 
   private boolean tokenIsValid(String token) {
-    return true;
+    return authController.sessionValid(token);
   }
 
   private void validateConfigurationMetaRequest(ConfigurationMetaRequest request) {
@@ -70,8 +73,8 @@ public class ServiceConfigurationController {
   @PostMapping("/config/{group}/meta")
   public void insertMeta(
     @RequestBody ConfigurationMetaRequest value,
-    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group) {
     final String name = name(user, token);
     if (isAdmin(name)) {
@@ -85,8 +88,8 @@ public class ServiceConfigurationController {
   @Operation(summary = "Получение мета конфигурации по URI", tags = ApplicationConfiguration.TAG_BUSINESS_META)
   @GetMapping("/config/{group}/{uri}/meta")
   public ConfigurationMetaResponse selectMetaByUrl(
-    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
     final String name = name(user, token);
@@ -99,8 +102,8 @@ public class ServiceConfigurationController {
 
   @Operation(summary = "Редактирование мета конфигурации конфига", tags = ApplicationConfiguration.TAG_BUSINESS_META)
   @PutMapping("/config/{group}/{uri}/meta")
-  public void updateMeta(@RequestBody ConfigurationMetaRequest value, @RequestHeader(value = Protocol.HEADER_USER,
-    required = false) String user, @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+  public void updateMeta(@RequestBody ConfigurationMetaRequest value, @RequestHeader(name = Protocol.HEADER_USER,
+    required = false) String user, @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri,
     @PathVariable(value = "group") String group) {
     final String name = name(user, token);
@@ -116,8 +119,8 @@ public class ServiceConfigurationController {
 
   @Operation(summary = "Удаление мета конфигурации конфига", tags = ApplicationConfiguration.TAG_BUSINESS_META)
   @DeleteMapping("/config/{group}/{uri}/meta")
-  public void deleteMeta(@RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
-    @PathVariable("uri") String uri, @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+  public void deleteMeta(@RequestHeader(name = Protocol.HEADER_USER, required = false) String user,
+    @PathVariable("uri") String uri, @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group) {
     final String name = name(user, token);
 
@@ -132,8 +135,8 @@ public class ServiceConfigurationController {
   @Operation(summary = "Получение конфигурации по URI", tags = ApplicationConfiguration.TAG_BUSINESS_CONFIG)
   @GetMapping("/config/{group}/{uri}")
   public String selectByUrl(
-    @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_USER, required = false) String user,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
     final String name = name(user, token);
@@ -148,8 +151,8 @@ public class ServiceConfigurationController {
   @PutMapping("/config/{group}/{uri}")
   public void updateConfig
     (@RequestBody String value,
-      @RequestHeader(value = Protocol.HEADER_USER, required = false) String user,
-      @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+      @RequestHeader(name = Protocol.HEADER_USER, required = false) String user,
+      @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
       @PathVariable(value = "group") String group,
       @PathVariable("uri") String uri) {
     final String name = name(user, token);

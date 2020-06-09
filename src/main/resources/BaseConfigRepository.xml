@@ -33,14 +33,16 @@
     SELECT value
     FROM postgres.public.configs
     WHERE (is_admin = #{isAdmin} and username is null)
-       or username = #{username};
+       or username = #{username}
+    ORDER BY created_at DESC
   </select>
 
   <select id="findConfigByUrl" resultType="java.lang.String">
     SELECT value
     FROM postgres.public.configs
     WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
-      AND uri = #{uri};
+      AND uri = #{uri}
+    ORDER BY created_at DESC
   </select>
 
 
@@ -49,14 +51,16 @@
     SELECT *
     FROM postgres.public.configs
     WHERE (is_admin = #{isAdmin} and username is null)
-       or username = #{username};
+       or username = #{username}
+    ORDER BY created_at DESC
   </select>
 
   <select id="findMetaByUrl" resultType="ru.demkin.esb.configserver.model.ConfigurationMetaResponse">
     SELECT *
     FROM postgres.public.configs
     WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
-      AND uri = #{uri};
+      AND uri = #{uri}
+    ORDER BY created_at DESC
   </select>
 
   <delete id="deleteConfig">
@@ -100,6 +104,7 @@
       id, uri, label
     FROM
         postgres.public.groups
+    ORDER BY created_at DESC
   </select>
 
   <select id="findGroupByUrl" resultType="ru.demkin.esb.configserver.model.GroupResponse">
@@ -109,6 +114,7 @@
       postgres.public.groups
     WHERE
         uri = #{uri}
+    ORDER BY created_at DESC
   </select>
 
   <delete id="deleteGroup">

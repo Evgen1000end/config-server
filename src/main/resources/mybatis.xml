@@ -11,5 +11,6 @@
   <mappers>
     <mapper resource="BaseConfigRepository.xml"/>
     <mapper resource="UserRepository.xml"/>
+    <mapper resource="SessionRepository.xml"/>
   </mappers>
 </configuration>

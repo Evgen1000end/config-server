@@ -1,6 +1,8 @@
 package ru.demkin.esb.configserver.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +42,9 @@ public class BaseConfigurationController {
   @Autowired
   private ApplicationProperties properties;
 
+  @Autowired
+  private AuthController authController;
+
   private String name(String token) {
     final boolean tokenEmpty = StringUtils.isBlank(token);
     if (tokenEmpty) {
@@ -58,7 +63,7 @@ public class BaseConfigurationController {
   }
 
   private boolean tokenIsValid(String token) {
-    return true;
+    return authController.sessionValid(token);
   }
 
   private void validateGroupRequest(GroupRequest groupRequest) {
@@ -82,8 +87,9 @@ public class BaseConfigurationController {
   @Operation(summary = "Создание группы", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)
   @PostMapping("/group")
   public void insertGroup(
-    @RequestBody GroupRequest value,
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token) {
+
+     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestBody GroupRequest value) {
     name(token);
     validateGroupRequest(value);
     base.insertGroup(value);
@@ -91,8 +97,7 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Получение списка групп", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)
   @GetMapping(value = "/group")
-  public List<GroupResponse> selectGroups(
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token) {
+  public List<GroupResponse> selectGroups(@RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token) {
     name(token);
     return base.findAllGroups();
   }
@@ -100,7 +105,7 @@ public class BaseConfigurationController {
   @Operation(summary = "Получение группы по URI", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)
   @GetMapping("/group/{uri}")
   public GroupResponse selectGroupByUrl(
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri) {
     name(token);
     return base.findGroupByUri(uri);
@@ -110,7 +115,7 @@ public class BaseConfigurationController {
   @PutMapping("/group/{uri}")
   public void updateGroup(
     @RequestBody GroupRequest value,
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri) {
     final String name = name(token);
     validateGroupRequest(value);
@@ -120,7 +125,7 @@ public class BaseConfigurationController {
   @Operation(summary = "Удаление группы", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)
   @DeleteMapping("/group/{uri}")
   public void deleteGroup(
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri) {
     name(token);
     List<ConfigurationMetaResponse> configurationDescriptions = selectMetaByGroup(token, uri);
@@ -136,7 +141,7 @@ public class BaseConfigurationController {
   @PostMapping("/config/{group}/meta")
   public void insertMeta(
     @RequestBody ConfigurationMetaRequest value,
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group) {
     final String name = name(token);
     validateConfigurationMetaRequest(value);
@@ -147,7 +152,7 @@ public class BaseConfigurationController {
     ApplicationConfiguration.TAG_ADMIN_META)
   @GetMapping(value = "/config/{group}/meta")
   public List<ConfigurationMetaResponse> selectMetaByGroup(
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group) {
     final String name = name(token);
     return base
@@ -160,7 +165,7 @@ public class BaseConfigurationController {
   @Operation(summary = "Получение метаинформации конфигурации по URI", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @GetMapping("/config/{group}/{uri}/meta")
   public ConfigurationMetaResponse selectMetaByUrl(
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
     final String name = name(token);
@@ -170,7 +175,7 @@ public class BaseConfigurationController {
   @Operation(summary = "Получение конфигурации по URI", tags = ApplicationConfiguration.TAG_ADMIN_CONFIG)
   @GetMapping("/config/{group}/{uri}")
   public String selectByUrl(
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
     final String name = name(token);
@@ -181,7 +186,7 @@ public class BaseConfigurationController {
   @PutMapping("/config/{group}/{uri}")
   public void updateConfig
     (@RequestBody String value,
-      @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+      @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
       @PathVariable(value = "group") String group,
       @PathVariable("uri") String uri) {
     final String name = name(token);
@@ -192,7 +197,7 @@ public class BaseConfigurationController {
   @PutMapping("/config/{group}/{uri}/meta")
   public void update
     (@RequestBody ConfigurationMetaRequest value,
-      @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+      @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
       @PathVariable(value = "group") String group,
       @PathVariable("uri") String uri) {
     final String name = name(token);
@@ -203,7 +208,7 @@ public class BaseConfigurationController {
   @Operation(summary = "Удаление метаинформации конфигурации", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @DeleteMapping("/config/{group}/{uri}/meta")
   public void delete(
-    @RequestHeader(value = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
     final String name = name(token);
@@ -212,7 +217,8 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Список пользователей", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @GetMapping("/users")
-  public List<String> findUsers() {
+  public List<String> findUsers(@RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token) {
+    name(token);
     return repository.findUsers();
   }
 
