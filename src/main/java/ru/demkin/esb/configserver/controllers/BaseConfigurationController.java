@@ -139,13 +139,14 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Создание метаинформации конфигурации", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @PostMapping("/config/{group}/meta")
-  public void insertMeta(
+  public ConfigurationMetaResponse insertMeta(
     @RequestBody ConfigurationMetaRequest value,
     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group) {
     final String name = name(token);
     validateConfigurationMetaRequest(value);
     base.insert(value, name, group);
+    return base.select(name, value.getUri());
   }
 
   @Operation(summary = "Получение списка метаинформации для конфигураций для группы", tags =

@@ -13,7 +13,7 @@
     UPDATE
       postgres.public.configs
     SET is_admin = #{isAdmin},
-        uri      = #{uri},
+        uri      = #{description.uri},
         label    = #{description.label}
     WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
       AND uri = #{uri}

@@ -71,7 +71,7 @@ public class ServiceConfigurationController {
 
   @Operation(summary = "Создание мета конфигурации", tags = ApplicationConfiguration.TAG_BUSINESS_META)
   @PostMapping("/config/{group}/meta")
-  public void insertMeta(
+  public ConfigurationMetaResponse insertMeta(
     @RequestBody ConfigurationMetaRequest value,
     @RequestHeader(name = Protocol.HEADER_USER, required = false) String user,
     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
@@ -80,6 +80,7 @@ public class ServiceConfigurationController {
     if (isAdmin(name)) {
       validateConfigurationMetaRequest(value);
       base.insert(value, name, group);
+      return base.selectForAdmin(value.getUri());
     } else {
       throw new IllegalArgumentException("Unsupported operation. User " + user + " can't create meta config.");
     }
