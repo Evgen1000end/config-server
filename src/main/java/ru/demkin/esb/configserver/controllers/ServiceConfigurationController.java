@@ -21,7 +21,6 @@ import ru.demkin.esb.configserver.model.ConfigurationMetaResponse;
 import ru.demkin.esb.configserver.services.ConfigurationUpdateStrategy;
 
 @RestController
-//@Tag(name = "BUSINESS", description = "Управление конфигурациями - бизнес уровень")
 @RequestMapping("/v1")
 public class ServiceConfigurationController {
 
@@ -31,19 +30,15 @@ public class ServiceConfigurationController {
   @Autowired
   private AuthController authController;
 
-  @Autowired
-  private ApplicationProperties properties;
-
   private String name(String user, String token) {
+    if (!authController.isLogged()) {
+      throw new ForbiddenException("Access denied. You must login first.");
+    }
     final boolean tokenEmpty = StringUtils.isBlank(token);
     final boolean userEmpty = StringUtils.isBlank(user);
     if (tokenEmpty) {
       if (userEmpty) {
-        if (properties.isAuthEnabled()) {
-          throw new ForbiddenException("Access denied. Empty token for ADMIN.");
-        } else {
-          return null;
-        }
+        throw new ForbiddenException("Access denied. Empty token for ADMIN.");
       } else {
         return user;
       }

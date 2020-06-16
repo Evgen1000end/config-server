@@ -38,7 +38,6 @@ public class ApplicationConfiguration {
 
   private static final String API_KEY = "apiKey";
 
-
   @Bean
   public OpenAPI openAPI() {
     return new OpenAPI() //
@@ -50,7 +49,8 @@ public class ApplicationConfiguration {
 //      .security(Collections.singletonList(new SecurityRequirement().addList(API_KEY)))
 //      .components(new Components().addSecuritySchemes("bearer-key",
 //        new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
-     // .security(Collections.singletonList(new ApiKey(RestSecurityFilter.HTTP_REQUEST_API_KEY, RestSecurityFilter.HTTP_REQUEST_API_KEY, "header")))
+      // .security(Collections.singletonList(new ApiKey(RestSecurityFilter.HTTP_REQUEST_API_KEY, RestSecurityFilter
+      // .HTTP_REQUEST_API_KEY, "header")))
       .tags(TAGS)
       .components(new Components()) //
       .info(new Info() //
@@ -60,7 +60,6 @@ public class ApplicationConfiguration {
         .version(getClass().getPackage().getImplementationVersion()));
   }
 
-
   public SecurityScheme apiKeySecuritySchema() {
     return new SecurityScheme()
       .name(Protocol.HEADER_ADMIN) // authorisation-token
@@ -69,8 +68,7 @@ public class ApplicationConfiguration {
       .type(SecurityScheme.Type.APIKEY);
   }
 
-
-    @Bean
+  @Bean
   public ConfigurationUpdateStrategy base() {
     return new BaseConfigurationUpdateStrategy();
   }

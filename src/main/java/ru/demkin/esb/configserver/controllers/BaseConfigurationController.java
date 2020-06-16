@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-//@Tag(name = "API", description = "Управление конфигурациями - административный уровень")
 @RequestMapping(value = "/v1/base")
 public class BaseConfigurationController {
 
@@ -40,19 +39,15 @@ public class BaseConfigurationController {
   private ConfigurationUpdateStrategy base;
 
   @Autowired
-  private ApplicationProperties properties;
-
-  @Autowired
   private AuthController authController;
 
   private String name(String token) {
+    if (!authController.isLogged()) {
+      throw new ForbiddenException("Access denied. You must login first.");
+    }
     final boolean tokenEmpty = StringUtils.isBlank(token);
     if (tokenEmpty) {
-      if (properties.isAuthEnabled()) {
-        throw new ForbiddenException("Access denied. Empty token for ADMIN.");
-      } else {
-        return null;
-      }
+      throw new ForbiddenException("Access denied. Empty token for ADMIN.");
     } else {
       if (tokenIsValid(token)) {
         return null;
@@ -88,7 +83,7 @@ public class BaseConfigurationController {
   @PostMapping("/group")
   public GroupResponse insertGroup(
 
-     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
+    @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @RequestBody GroupRequest value) {
     name(token);
     validateGroupRequest(value);
