@@ -86,13 +86,15 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Создание группы", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)
   @PostMapping("/group")
-  public void insertGroup(
+  public GroupResponse insertGroup(
 
      @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @RequestBody GroupRequest value) {
     name(token);
     validateGroupRequest(value);
     base.insertGroup(value);
+    return base.findGroupByUri(value.getUri());
+
   }
 
   @Operation(summary = "Получение списка групп", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)

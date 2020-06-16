@@ -94,7 +94,7 @@
   <update id="updateGroup">
     UPDATE
       postgres.public.groups
-    SET   label = #{groups.label}
+    SET   label = #{groups.label}, uri = #{groups.uri}
     WHERE uri = #{uri}
   </update>
 
