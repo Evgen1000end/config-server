@@ -1,5 +1,6 @@
 package ru.demkin.esb.configserver.services;
 
+import ru.demkin.esb.configserver.model.BaseConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.ConfigurationMetaRequest;
 import ru.demkin.esb.configserver.model.ConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.GroupRequest;
@@ -24,6 +25,8 @@ public interface ConfigurationUpdateStrategy {
 
   List<ConfigurationMetaResponse> select(String username);
 
+  List<BaseConfigurationMetaResponse> selectWithUsers(String username);
+
   // API для групп
   void insertGroup(GroupRequest group);
 
@@ -36,6 +39,8 @@ public interface ConfigurationUpdateStrategy {
   GroupResponse findGroupByUri(String uri);
 
   ConfigurationMetaResponse select(String username, String uri);
+
+  List<BaseConfigurationMetaResponse> selectWithUsers(String username, String uri);
 
   String selectConfig(String username, String uri);
 

@@ -5,12 +5,11 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ConfigurationMetaResponse {
-  private long id;
-  private long groupId;
-  private String uri;
-  private String label;
-  // private String value;
-  private String groupUri;
+  protected long id;
+  protected long groupId;
+  protected String uri;
+  protected String label;
+  protected String groupUri;
 
   public long getId() {
     return id;
@@ -35,14 +34,6 @@ public class ConfigurationMetaResponse {
   public void setLabel(String label) {
     this.label = label;
   }
-
-//  public String getValue() {
-//    return value;
-//  }
-//
-//  public void setValue(String value) {
-//    this.value = value;
-//  }
 
   public long getGroupId() {
     return groupId;

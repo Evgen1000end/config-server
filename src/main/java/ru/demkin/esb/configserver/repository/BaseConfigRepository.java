@@ -3,6 +3,7 @@ package ru.demkin.esb.configserver.repository;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import ru.demkin.esb.configserver.model.BaseConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.ConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.ConfigurationMetaRequest;
 import ru.demkin.esb.configserver.model.GroupRequest;
@@ -19,7 +20,11 @@ public interface BaseConfigRepository {
 
   List<ConfigurationMetaResponse> findMeta(String username, boolean isAdmin);
 
+  List<BaseConfigurationMetaResponse> findMetaWithUsers();
+
   List<ConfigurationMetaResponse> findMetaByUrl(String username, boolean isAdmin, String uri);
+
+  List<BaseConfigurationMetaResponse> findMetaByUrlWithUsers(String uri);
 
   List<String> findConfig(String username, boolean isAdmin);
 

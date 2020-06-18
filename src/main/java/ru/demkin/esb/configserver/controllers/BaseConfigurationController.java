@@ -18,6 +18,7 @@ import ru.demkin.esb.configserver.ApplicationConfiguration;
 import ru.demkin.esb.configserver.ApplicationProperties;
 import ru.demkin.esb.configserver.Protocol;
 import ru.demkin.esb.configserver.exception.ForbiddenException;
+import ru.demkin.esb.configserver.model.BaseConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.ConfigurationMetaRequest;
 import ru.demkin.esb.configserver.model.ConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.GroupRequest;
@@ -125,7 +126,7 @@ public class BaseConfigurationController {
     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri) {
     name(token);
-    List<ConfigurationMetaResponse> configurationDescriptions = selectMetaByGroup(token, uri);
+    List<BaseConfigurationMetaResponse> configurationDescriptions = selectMetaByGroup(token, uri);
     if (configurationDescriptions.isEmpty()) {
       base.deleteGroup(uri);
     } else {
@@ -149,12 +150,12 @@ public class BaseConfigurationController {
   @Operation(summary = "Получение списка метаинформации для конфигураций для группы", tags =
     ApplicationConfiguration.TAG_ADMIN_META)
   @GetMapping(value = "/config/{group}/meta")
-  public List<ConfigurationMetaResponse> selectMetaByGroup(
+  public List<BaseConfigurationMetaResponse> selectMetaByGroup(
     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group) {
     final String name = name(token);
     return base
-      .select(name)
+      .selectWithUsers(name)
       .stream()
       .filter(c -> c.getGroupUri().equals(group))
       .collect(Collectors.toList());
@@ -162,12 +163,12 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Получение метаинформации конфигурации по URI", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @GetMapping("/config/{group}/{uri}/meta")
-  public ConfigurationMetaResponse selectMetaByUrl(
+  public List<BaseConfigurationMetaResponse> selectMetaByUrl(
     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
     final String name = name(token);
-    return base.select(name, uri);
+    return base.selectWithUsers(name, uri);
   }
 
   @Operation(summary = "Получение конфигурации по URI", tags = ApplicationConfiguration.TAG_ADMIN_CONFIG)

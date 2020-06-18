@@ -55,11 +55,24 @@
     ORDER BY created_at DESC
   </select>
 
+  <select id="findMetaWithUsers" resultType="ru.demkin.esb.configserver.model.BaseConfigurationMetaResponse">
+    SELECT *
+    FROM postgres.public.configs
+    ORDER BY created_at DESC
+  </select>
+
   <select id="findMetaByUrl" resultType="ru.demkin.esb.configserver.model.ConfigurationMetaResponse">
     SELECT *
     FROM postgres.public.configs
     WHERE ((is_admin = #{isAdmin} and username is null) or username = #{username})
       AND uri = #{uri}
+    ORDER BY created_at DESC
+  </select>
+
+  <select id="findMetaByUrlWithUsers" resultType="ru.demkin.esb.configserver.model.BaseConfigurationMetaResponse">
+    SELECT *
+    FROM postgres.public.configs
+    WHERE uri = #{uri}
     ORDER BY created_at DESC
   </select>
 

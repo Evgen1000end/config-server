@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.demkin.esb.configserver.Utils;
 import ru.demkin.esb.configserver.exception.AlreadyExistException;
 import ru.demkin.esb.configserver.exception.NotFoundException;
+import ru.demkin.esb.configserver.model.BaseConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.ConfigurationMetaResponse;
 import ru.demkin.esb.configserver.model.ConfigurationMetaRequest;
 import ru.demkin.esb.configserver.model.GroupRequest;
@@ -73,6 +74,11 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
   }
 
   @Override
+  public List<BaseConfigurationMetaResponse> selectWithUsers(String username) {
+    return base.findMetaWithUsers();
+  }
+
+  @Override
   public void insertGroup(GroupRequest group) {
     List<GroupResponse> groups = base.findGroupByUrl(group.getUri());
     if (!groups.isEmpty()) {
@@ -118,6 +124,11 @@ public class BaseConfigurationUpdateStrategy implements ConfigurationUpdateStrat
     } else {
       return configDto.get(0);
     }
+  }
+
+  @Override
+  public List<BaseConfigurationMetaResponse> selectWithUsers(String username, String uri) {
+    return base.findMetaByUrlWithUsers(uri);
   }
 
   @Override
