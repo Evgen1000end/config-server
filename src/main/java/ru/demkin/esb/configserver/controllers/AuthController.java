@@ -59,7 +59,7 @@ public class AuthController {
     validateLogin(request);
     String session = createSession(request);
     isLogged = true;
-    return new LoginResponse(session);
+    return new LoginResponse(session, request.getUsername(), request.getUsername());
   }
 
   @PostMapping("/logout")

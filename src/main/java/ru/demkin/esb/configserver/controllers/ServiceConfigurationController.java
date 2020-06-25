@@ -98,7 +98,7 @@ public class ServiceConfigurationController {
 
   @Operation(summary = "Редактирование мета конфигурации конфига", tags = ApplicationConfiguration.TAG_BUSINESS_META)
   @PutMapping("/config/{group}/{uri}/meta")
-  public void updateMeta(@RequestBody ConfigurationMetaRequest value, @RequestHeader(name = Protocol.HEADER_USER,
+  public ConfigurationMetaResponse updateMeta(@RequestBody ConfigurationMetaRequest value, @RequestHeader(name = Protocol.HEADER_USER,
     required = false) String user, @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri,
     @PathVariable(value = "group") String group) {
@@ -106,9 +106,8 @@ public class ServiceConfigurationController {
     if (isAdmin(name)) {
       validateConfigurationMetaRequest(value);
       base.updateForAdmin(value, uri);
+      return base.selectForAdmin(uri);
     } else {
-      //
-      // base.update(value, user, uri);
       throw new IllegalArgumentException("Unsupported operation. User " + user + " can't update meta config.");
     }
   }

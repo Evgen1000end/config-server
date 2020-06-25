@@ -111,13 +111,14 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Редактирование группы", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)
   @PutMapping("/group/{uri}")
-  public void updateGroup(
+  public GroupResponse updateGroup(
     @RequestBody GroupRequest value,
     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable("uri") String uri) {
     final String name = name(token);
     validateGroupRequest(value);
     base.updateGroup(value, uri);
+    return base.findGroupByUri(value.getUri());
   }
 
   @Operation(summary = "Удаление группы", tags = ApplicationConfiguration.TAG_ADMIN_GROUP)
@@ -194,7 +195,7 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Редактирование метаинформации конфигурации", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @PutMapping("/config/{group}/{uri}/meta")
-  public void update
+  public ConfigurationMetaResponse update
     (@RequestBody ConfigurationMetaRequest value,
       @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
       @PathVariable(value = "group") String group,
@@ -202,6 +203,7 @@ public class BaseConfigurationController {
     final String name = name(token);
     validateConfigurationMetaRequest(value);
     base.update(value, name, uri);
+    return base.select(name, value.getUri());
   }
 
   @Operation(summary = "Удаление метаинформации конфигурации", tags = ApplicationConfiguration.TAG_ADMIN_META)
