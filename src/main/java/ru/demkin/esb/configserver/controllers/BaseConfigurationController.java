@@ -164,12 +164,12 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Получение метаинформации конфигурации по URI", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @GetMapping("/config/{group}/{uri}/meta")
-  public List<BaseConfigurationMetaResponse> selectMetaByUrl(
+  public ConfigurationMetaResponse selectMetaByUrl(
     @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
     @PathVariable(value = "group") String group,
     @PathVariable("uri") String uri) {
     final String name = name(token);
-    return base.selectWithUsers(name, uri);
+    return base.select(name, uri);
   }
 
   @Operation(summary = "Получение конфигурации по URI", tags = ApplicationConfiguration.TAG_ADMIN_CONFIG)
@@ -195,8 +195,7 @@ public class BaseConfigurationController {
 
   @Operation(summary = "Редактирование метаинформации конфигурации", tags = ApplicationConfiguration.TAG_ADMIN_META)
   @PutMapping("/config/{group}/{uri}/meta")
-  public ConfigurationMetaResponse update
-    (@RequestBody ConfigurationMetaRequest value,
+  public ConfigurationMetaResponse update(@RequestBody ConfigurationMetaRequest value,
       @RequestHeader(name = Protocol.HEADER_ADMIN, required = false) String token,
       @PathVariable(value = "group") String group,
       @PathVariable("uri") String uri) {
